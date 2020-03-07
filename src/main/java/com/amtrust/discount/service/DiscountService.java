@@ -6,7 +6,7 @@ import com.amtrust.discount.entity.DiscountCode;
 import com.amtrust.discount.entity.Recipient;
 import com.amtrust.discount.entity.SpecialOffer;
 import com.amtrust.discount.exception.DiscountServiceException;
-import com.amtrust.discount.request.ValidateDiscountCodeRequest;
+import com.amtrust.discount.request.RedeemDiscountCodeRequest;
 import com.amtrust.discount.request.ValidateSpecialOfferRequest;
 import com.amtrust.discount.response.DiscountCodeResponse;
 import com.amtrust.discount.response.GetDiscountCodeResponse;
@@ -32,6 +32,6 @@ public interface DiscountService {
 
 	public DiscountCodeResponse validateAndGetDiscountCode(ValidateSpecialOfferRequest validateDiscountRequest);
 
-	public RedeemCodeResponse redeemDiscountCode(ValidateDiscountCodeRequest validateDiscountRequest);
+	public RedeemCodeResponse redeemDiscountCode(RedeemDiscountCodeRequest validateDiscountRequest);
 
 }

@@ -22,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import com.amtrust.discount.constant.ServicesErrorCode;
 import com.amtrust.discount.entity.Recipient;
 import com.amtrust.discount.entity.SpecialOffer;
-import com.amtrust.discount.request.ValidateDiscountCodeRequest;
+import com.amtrust.discount.request.RedeemDiscountCodeRequest;
 import com.amtrust.discount.request.ValidateSpecialOfferRequest;
 import com.amtrust.discount.response.DiscountCodeResponse;
 import com.amtrust.discount.response.DiscountCodesResponse;
@@ -71,7 +71,7 @@ public class DiscountControllerTest {
 	// Redeem Discount Tests
 	@Test
 	public void redeemDiscountCode() {
-		ValidateDiscountCodeRequest request = new ValidateDiscountCodeRequest();
+		RedeemDiscountCodeRequest request = new RedeemDiscountCodeRequest();
 		request.setEmail("kalyan@gmail.com");
 		for(DiscountInfo discountInfo : discountInfos){
 			request.setDiscountCode(discountInfo.getDiscountCode());
@@ -84,7 +84,7 @@ public class DiscountControllerTest {
 
 	@Test
 	public void redeemDiscountCode_invalid_discount_code() {
-		ValidateDiscountCodeRequest request = new ValidateDiscountCodeRequest();
+		RedeemDiscountCodeRequest request = new RedeemDiscountCodeRequest();
 		request.setEmail("kalyan@gmail.com");
 		request.setDiscountCode("Invalid code");
 		RedeemCodeResponse response = restTemplate.postForObject(localHostUrl + "/redeemDiscountCode", request,
@@ -96,7 +96,7 @@ public class DiscountControllerTest {
 
 	@Test
 	public void redeemDiscountCode_invalid_email() {
-		ValidateDiscountCodeRequest request = new ValidateDiscountCodeRequest();
+		RedeemDiscountCodeRequest request = new RedeemDiscountCodeRequest();
 		request.setEmail("12131@gmail.com");
 		request.setDiscountCode("Invalid code");
 		RedeemCodeResponse response = restTemplate.postForObject(localHostUrl + "/redeemDiscountCode", request,

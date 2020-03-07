@@ -19,7 +19,7 @@ import com.amtrust.discount.exception.DiscountServiceException;
 import com.amtrust.discount.repository.DiscountCodeRepository;
 import com.amtrust.discount.repository.RecipientRepository;
 import com.amtrust.discount.repository.SpecialOfferRepository;
-import com.amtrust.discount.request.ValidateDiscountCodeRequest;
+import com.amtrust.discount.request.RedeemDiscountCodeRequest;
 import com.amtrust.discount.request.ValidateSpecialOfferRequest;
 import com.amtrust.discount.response.DiscountCodeResponse;
 import com.amtrust.discount.response.DiscountInfo;
@@ -106,7 +106,8 @@ public class DiscountServiceImpl implements DiscountService {
 			return response;
 		}
 
-		String uniqueDiscountCode = r.hashCode() + RandomStringUtils.randomAlphanumeric(8);
+		int hashcode = (r.hashCode() & 0xfffffff);
+		String uniqueDiscountCode = hashcode + RandomStringUtils.randomAlphanumeric(8);
 		discountCode.setDiscountCode(uniqueDiscountCode);
 		discountCode.setExpiryDate(validateSpecialOfferRequest.getExpiryDate());
 		discountCodeRepository.save(discountCode);
@@ -117,11 +118,11 @@ public class DiscountServiceImpl implements DiscountService {
 	}
 
 	@Override
-	public RedeemCodeResponse redeemDiscountCode(ValidateDiscountCodeRequest validateDiscountRequest) {
+	public RedeemCodeResponse redeemDiscountCode(RedeemDiscountCodeRequest validateDiscountRequest) {
 		RedeemCodeResponse response = new RedeemCodeResponse();
 		Recipient r = recipientRepository.findByEmail(validateDiscountRequest.getEmail());
 		// Validate Data
-		ResponseStatus responseStatus = validatorUtils.validateDiscountRequest(r, validateDiscountRequest);
+		ResponseStatus responseStatus = validatorUtils.validateRedeemRequest(r, validateDiscountRequest);
 		if (responseStatus.getStatus().equals(ResponseStatusConstants.ERROR)) {
 			response.setResponseStatus(responseStatus);
 			response.setDiscountPercent(0);

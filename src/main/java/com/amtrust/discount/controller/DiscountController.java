@@ -17,7 +17,7 @@ import com.amtrust.discount.entity.DiscountCode;
 import com.amtrust.discount.entity.Recipient;
 import com.amtrust.discount.entity.SpecialOffer;
 import com.amtrust.discount.exception.DiscountServiceException;
-import com.amtrust.discount.request.ValidateDiscountCodeRequest;
+import com.amtrust.discount.request.RedeemDiscountCodeRequest;
 import com.amtrust.discount.request.ValidateSpecialOfferRequest;
 import com.amtrust.discount.response.DiscountCodeResponse;
 import com.amtrust.discount.response.DiscountCodesResponse;
@@ -40,7 +40,7 @@ import io.swagger.annotations.ApiOperation;
 		"Discount Controller" })
 @RestController
 @RequestMapping("/")
-@CrossOrigin(origins = "http:localhost:4200", maxAge=3600)
+@CrossOrigin(origins = "http://localhost:4200", maxAge=3600)
 public class DiscountController {
 
 	@Autowired
@@ -164,7 +164,7 @@ public class DiscountController {
 
 	@ApiOperation(value = "This service helps to check if user can redeem Discount based on Discount Code and Email", response = RedeemCodeResponse.class)
 	@PostMapping(value = "/redeemDiscountCode", produces = { "application/json" })
-	public RedeemCodeResponse redeemDiscountCode(@RequestBody ValidateDiscountCodeRequest validateDiscountRequest) {
+	public RedeemCodeResponse redeemDiscountCode(@RequestBody RedeemDiscountCodeRequest validateDiscountRequest) {
 		// Validation Start -- Validating Request Object for Mandatory params
 		ValidationResponse validationResponse = validatorUtils.isValid(validateDiscountRequest);
 		if (!validationResponse.isValid()) {
