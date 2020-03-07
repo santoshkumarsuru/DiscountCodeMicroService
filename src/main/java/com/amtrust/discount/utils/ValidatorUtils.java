@@ -27,11 +27,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class ValidatorUtils {
 
 	/**
-	 * Validates if discountCode, email parameters Data are valid. Also make sure that the its not used, not expired
+	 * Validates if discountCode, email parameters Data are valid.
+	 * Also make sure that the its used once only and not expired
 	 * 
 	 * @param recipient
 	 * @param specialOffer
-	 * @return
+	 * @return ResponseStatus
 	 */
 	public ResponseStatus validateSpecialOfferRequest(Recipient recipient, SpecialOffer specialOffer) {
 		ResponseStatus responseStatus = new ResponseStatus();
@@ -60,7 +61,7 @@ public class ValidatorUtils {
 	 * 
 	 * @param recipient
 	 * @param validateDiscountRequest
-	 * @return
+	 * @return ResponseStatus
 	 */
 	public ResponseStatus validateRedeemRequest(Recipient recipient,
 			RedeemDiscountCodeRequest validateDiscountRequest) {
@@ -89,6 +90,12 @@ public class ValidatorUtils {
 		return responseStatus;
 	}
 
+	/**
+	 * Validates the Any request data which is having contraints
+	 * 
+	 * @param validateObject
+	 * @return ValidationResponse
+	 */
 	public ValidationResponse isValid(Object validateObject) {
 		ValidationResponse validationResponse = new ValidationResponse();
 		validationResponse.setValid(true);

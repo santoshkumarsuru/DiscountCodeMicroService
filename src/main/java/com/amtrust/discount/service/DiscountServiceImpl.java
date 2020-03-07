@@ -152,7 +152,7 @@ public class DiscountServiceImpl implements DiscountService {
 		if (r != null && r.getDiscountCodes().size() > 0) {
 			List<DiscountInfo> discountInfos = r.getDiscountCodes().stream()
 					.map(discountCode -> new DiscountInfo(discountCode.getDiscountCode(),
-							discountCode.getSpecialOffer().getOfferName()))
+							discountCode.getSpecialOffer().getOfferName(),discountCode.isUsed()))
 					.collect(Collectors.toList());
 			response.setDiscountInfos(discountInfos);
 		} else if (r == null) {

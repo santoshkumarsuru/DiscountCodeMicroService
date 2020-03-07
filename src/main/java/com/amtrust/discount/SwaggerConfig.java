@@ -20,6 +20,6 @@ public class SwaggerConfig {
 				.build();
 
 		return docket;
-
 	}
+
 }

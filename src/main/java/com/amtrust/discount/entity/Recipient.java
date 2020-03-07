@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -30,6 +31,7 @@ public class Recipient implements Serializable {
 	private long id;
 	private String name;
 
+	@Email
 	@Column(name = "email", unique = true, nullable = false)
 	private String email;
 
