@@ -1,7 +1,6 @@
 package com.amtrust.discount.entity;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -18,13 +17,13 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import lombok.Data;
+
+@Data
 @Entity
 @Table(name = "RECIPIENT")
 public class Recipient implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -39,44 +38,14 @@ public class Recipient implements Serializable {
 	@Fetch(FetchMode.SELECT)
 	private List<DiscountCode> discountCodes;
 
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public List<DiscountCode> getDiscountCodes() {
-		if(discountCodes == null) {
-			discountCodes = new ArrayList<DiscountCode>();
-		}
-		return discountCodes;
-	}
-
-	public void setDiscountCodes(List<DiscountCode> discountCodes) {
-		this.discountCodes = discountCodes;
-	}
-
 	@Override
-	public String toString() {
-		return "Recipient [id=" + id + ", name=" + name + ", email=" + email + ", discountCodes=" + discountCodes + "]";
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((email == null) ? 0 : email.hashCode());
+		result = prime * result + (int) (id ^ (id >>> 32));
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
 	}
 	
 }

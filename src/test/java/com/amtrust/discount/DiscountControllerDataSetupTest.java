@@ -2,6 +2,8 @@ package com.amtrust.discount;
 
 import static org.junit.Assert.assertNotNull;
 
+import java.time.LocalDate;
+
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -90,6 +92,7 @@ public class DiscountControllerDataSetupTest {
 			String specialOfferName) {
 		request.setEmail(email);
 		request.setSpecialOfferName(specialOfferName);
+		request.setExpiryDate(LocalDate.now().plusMonths(2));
 		DiscountCodeResponse response = restTemplate.postForObject(localHostUrl + "/validateAndGetDiscountCode",
 				request, DiscountCodeResponse.class);
 		assertNotNull(response);

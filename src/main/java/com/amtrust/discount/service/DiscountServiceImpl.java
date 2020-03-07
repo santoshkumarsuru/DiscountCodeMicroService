@@ -106,11 +106,9 @@ public class DiscountServiceImpl implements DiscountService {
 			return response;
 		}
 
-		String uniqueDiscountCode = r.getEmail() + RandomStringUtils.randomAlphanumeric(6);
+		String uniqueDiscountCode = r.hashCode() + RandomStringUtils.randomAlphanumeric(8);
 		discountCode.setDiscountCode(uniqueDiscountCode);
-		LocalDate expiryDate = LocalDate.now().plusDays(30);// Set 30 days
-															// Expiry period
-		discountCode.setExpiryDate(expiryDate);
+		discountCode.setExpiryDate(validateSpecialOfferRequest.getExpiryDate());
 		discountCodeRepository.save(discountCode);
 		response.setDiscountCode(discountCode);
 		response.setResponseStatus(new ResponseStatus());

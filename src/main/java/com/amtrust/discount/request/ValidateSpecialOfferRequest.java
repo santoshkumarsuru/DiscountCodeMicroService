@@ -1,7 +1,14 @@
 package com.amtrust.discount.request;
 
+import java.time.LocalDate;
+
 import javax.validation.constraints.NotEmpty;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import lombok.Data;
+
+@Data
 public class ValidateSpecialOfferRequest {
 
 	@NotEmpty
@@ -9,26 +16,8 @@ public class ValidateSpecialOfferRequest {
 
 	@NotEmpty
 	private String email;
-
-	public String getSpecialOfferName() {
-		return specialOfferName;
-	}
-
-	public void setSpecialOfferName(String specialOfferName) {
-		this.specialOfferName = specialOfferName;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	@Override
-	public String toString() {
-		return "ValidateSpecialOfferRequest [specialOfferName=" + specialOfferName + ", email=" + email + "]";
-	}
+	
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy/MM/dd") 
+	private LocalDate expiryDate;
 
 }

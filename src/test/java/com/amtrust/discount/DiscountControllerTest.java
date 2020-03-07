@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
@@ -20,13 +21,19 @@ import org.springframework.web.client.RestTemplate;
 
 import com.amtrust.discount.constant.ServicesErrorCode;
 import com.amtrust.discount.entity.Recipient;
+import com.amtrust.discount.entity.SpecialOffer;
 import com.amtrust.discount.request.ValidateDiscountCodeRequest;
 import com.amtrust.discount.request.ValidateSpecialOfferRequest;
 import com.amtrust.discount.response.DiscountCodeResponse;
+import com.amtrust.discount.response.DiscountCodesResponse;
 import com.amtrust.discount.response.DiscountInfo;
 import com.amtrust.discount.response.GetDiscountCodeResponse;
 import com.amtrust.discount.response.RecipientResponse;
+import com.amtrust.discount.response.RecipientsResponse;
 import com.amtrust.discount.response.RedeemCodeResponse;
+import com.amtrust.discount.response.ResponseStatus;
+import com.amtrust.discount.response.ResponseStatusConstants;
+import com.amtrust.discount.response.SpecialOffersResponse;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DiscountControllerTest {
@@ -41,21 +48,24 @@ public class DiscountControllerTest {
 		r.setEmail(null);
 		r.setName("kalyan");
 		RecipientResponse response = restTemplate.postForObject(localHostUrl + "/addRecipient", r, RecipientResponse.class);
+		assertNotNull(response);
+		assertNotNull(response.getRecipient());
+		assertNotNull(response.getRecipient().getId());
 	}
 
 	@Test
 	public void a_getAllDiscountCodesByEmail() {
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
-		bodyMap.add("email", "kalyan@gmail.com");
-		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
-
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = populateMultimapRequest("email", "kalyan@gmail.com");
 		GetDiscountCodeResponse response = restTemplate.postForObject(localHostUrl + "/getAllDiscountCodesByEmail",
 				requestEntity, GetDiscountCodeResponse.class);
 		assertNotNull(response);
 		assertTrue(!CollectionUtils.isEmpty(response.getDiscountInfos()));
 		discountInfos = response.getDiscountInfos();
+		for(DiscountInfo di : discountInfos){
+			assertTrue(StringUtils.isNotEmpty(di.getDiscountCode()));
+			assertTrue(di.getDiscountCode().length() > 8);
+			assertTrue(StringUtils.isNotEmpty(di.getSpecialOfferName()));
+		}
 	}
 
 	// Redeem Discount Tests
@@ -161,6 +171,52 @@ public class DiscountControllerTest {
 				request, DiscountCodeResponse.class);
 		assertNotNull(response);
 		assertEquals(response.getResponseStatus().getErrorCode(), ServicesErrorCode.OFFER_NOT_EXIST.getErrorCode());
+	}
+	
+	// Deleting Data Tests
+	@Test()
+	public void z_deleteRecipients() {
+		RecipientsResponse response = restTemplate.getForObject(localHostUrl + "/getRecipients",RecipientsResponse.class);
+		assertNotNull(response);
+		ResponseStatus status = null;
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = null;
+		for(Recipient r : response.getRecipients()){
+			requestEntity = populateMultimapRequest("recipientId", r.getId());
+			status = restTemplate.postForObject(localHostUrl + "/deleteRecipient", requestEntity, ResponseStatus.class);
+			assertEquals(ResponseStatusConstants.SUCCESS, status.getStatus());
+		}
+		// All Discount Offers also should be deleted when recipients are deleted
+		DiscountCodesResponse codesResponse = restTemplate.getForObject(localHostUrl + "/getDiscountCodes",DiscountCodesResponse.class);
+		assertTrue("Orphan Data is not DELETED!", codesResponse.getDiscountCodes().isEmpty());
+	}
+	
+	@Test()
+	public void z_deleteSpecialOffers() {
+		SpecialOffersResponse response = restTemplate.getForObject(localHostUrl + "/getSpecialOffers",SpecialOffersResponse.class);
+		assertNotNull(response);
+		ResponseStatus status = null;
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = null;
+		for(SpecialOffer so : response.getSpecialOffers()){
+			requestEntity = populateMultimapRequest("specialOfferId", so.getId());
+			status = restTemplate.postForObject(localHostUrl + "/deleteSpecialOffer", requestEntity, ResponseStatus.class);
+			assertEquals(ResponseStatusConstants.SUCCESS, status.getStatus());
+		}
+		// All Discount Offers also should be deleted when recipients are deleted
+		SpecialOffersResponse offersResponse = restTemplate.getForObject(localHostUrl + "/getSpecialOffers",SpecialOffersResponse.class);
+		assertTrue("Orphan Data is not DELETED!", offersResponse.getSpecialOffers().isEmpty());
+	}
+	
+	
+	/**
+	 * @return
+	 */
+	private HttpEntity<MultiValueMap<String, Object>> populateMultimapRequest(String param , Object value) {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+		MultiValueMap<String, Object> bodyMap = new LinkedMultiValueMap<>();
+		bodyMap.add(param, value);
+		HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(bodyMap, headers);
+		return requestEntity;
 	}
 
 }
