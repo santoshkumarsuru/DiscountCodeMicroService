@@ -1,0 +1,164 @@
+package com.amtrust.discount.service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import com.amtrust.discount.constant.ServicesErrorCode;
+import com.amtrust.discount.entity.DiscountCode;
+import com.amtrust.discount.entity.Recipient;
+import com.amtrust.discount.entity.SpecialOffer;
+import com.amtrust.discount.repository.DiscountCodeRepository;
+import com.amtrust.discount.repository.RecipientRepository;
+import com.amtrust.discount.repository.SpecialOfferRepository;
+import com.amtrust.discount.request.ValidateDiscountCodeRequest;
+import com.amtrust.discount.request.ValidateSpecialOfferRequest;
+import com.amtrust.discount.response.DiscountCodeResponse;
+import com.amtrust.discount.response.DiscountInfo;
+import com.amtrust.discount.response.GetDiscountCodeResponse;
+import com.amtrust.discount.response.RedeemCodeResponse;
+import com.amtrust.discount.response.ResponseStatus;
+import com.amtrust.discount.response.ResponseStatusConstants;
+import com.amtrust.discount.utils.ValidatorUtils;
+
+@Service
+public class DiscountServiceImpl implements DiscountService {
+
+	@Autowired
+	RecipientRepository recipientRepository;
+
+	@Autowired
+	SpecialOfferRepository specialOfferRepository;
+
+	@Autowired
+	DiscountCodeRepository discountCodeRepository;
+
+	@Autowired
+	ValidatorUtils validatorUtils;
+
+	@Override
+	public SpecialOffer addSpecialOffer(SpecialOffer specialOffer) {
+		return specialOfferRepository.save(specialOffer);
+	}
+
+	@Override
+	public void deleteSpecialOffer(Long offerId) {
+		specialOfferRepository.deleteById(offerId);
+	}
+
+	@Override
+	public List<SpecialOffer> getSpecialOffers() {
+		Iterable<SpecialOffer> offers = specialOfferRepository.findAll();
+		List<SpecialOffer> result = new ArrayList<SpecialOffer>();
+		offers.forEach(result::add);
+		return result;
+	}
+
+	@Override
+	public List<Recipient> getRecipients() {
+		Iterable<Recipient> recipients = recipientRepository.findAll();
+		List<Recipient> result = new ArrayList<Recipient>();
+		recipients.forEach(result::add);
+		return result;
+	}
+
+	@Override
+	public Recipient addRecipient(Recipient recipient) {
+		return recipientRepository.save(recipient);
+	}
+
+	@Override
+	public DiscountCodeResponse validateAndGetDiscountCode(ValidateSpecialOfferRequest validateSpecialOfferRequest) {
+		DiscountCodeResponse response = new DiscountCodeResponse();
+		DiscountCode discountCode = new DiscountCode();
+		response.setDiscountCode(discountCode);
+		Recipient r = recipientRepository.findByEmail(validateSpecialOfferRequest.getEmail());
+		discountCode.setRecipient(r);
+		SpecialOffer so = specialOfferRepository.findByOfferName(validateSpecialOfferRequest.getSpecialOfferName());
+		discountCode.setSpecialOffer(so);
+		// Validate Data
+		ResponseStatus responseStatus = validatorUtils.validateSpecialOfferRequest(r, so);
+		if (responseStatus.getStatus().equals(ResponseStatusConstants.ERROR)) {
+			response.setResponseStatus(responseStatus);
+			response.setDiscountCode(null);
+			return response;
+		}
+
+		String uniqueDiscountCode = r.getEmail() + RandomStringUtils.randomAlphanumeric(6);
+		discountCode.setDiscountCode(uniqueDiscountCode);
+		LocalDate expiryDate = LocalDate.now().plusDays(30);// Set 30 days Expiry period
+		discountCode.setExpiryDate(expiryDate);
+		discountCodeRepository.save(discountCode);
+		response.setDiscountCode(discountCode);
+		response.setResponseStatus(new ResponseStatus());
+
+		return response;
+	}
+
+	@Override
+	public RedeemCodeResponse redeemDiscountCode(ValidateDiscountCodeRequest validateDiscountRequest) {
+		RedeemCodeResponse response = new RedeemCodeResponse();
+		Recipient r = recipientRepository.findByEmail(validateDiscountRequest.getEmail());
+		// Validate Data
+		ResponseStatus responseStatus = validatorUtils.validateDiscountRequest(r, validateDiscountRequest);
+		if (responseStatus.getStatus().equals(ResponseStatusConstants.ERROR)) {
+			response.setResponseStatus(responseStatus);
+			response.setDiscountPercent(0);
+			return response;
+		}
+		if (!CollectionUtils.isEmpty(r.getDiscountCodes())) {
+			DiscountCode dc = r.getDiscountCodes().stream()
+					.filter(predicate -> validateDiscountRequest.getDiscountCode().equals(predicate.getDiscountCode()))
+					.findAny().orElse(null);
+			if (dc != null) {
+				dc.setUsed(true);
+				dc.setUsedDate(LocalDate.now());
+				discountCodeRepository.save(dc);
+
+				response.setDiscountPercent(dc.getSpecialOffer().getDiscountPercent());
+			}
+		}
+		response.setResponseStatus(new ResponseStatus());
+
+		return response;
+	}
+
+	public GetDiscountCodeResponse getAllDiscountCodesByEmail(String email) {
+		GetDiscountCodeResponse response = new GetDiscountCodeResponse();
+		ResponseStatus responseStatus = new ResponseStatus();
+		Recipient r = recipientRepository.findByEmail(email);
+		if (r != null && r.getDiscountCodes().size() > 0) {
+			List<DiscountInfo> discountInfos = r.getDiscountCodes().stream()
+					.map(discountCode -> new DiscountInfo(discountCode.getDiscountCode(),
+							discountCode.getSpecialOffer().getOfferName()))
+					.collect(Collectors.toList());
+			response.setDiscountInfos(discountInfos);
+		} else if (r == null) {
+			responseStatus.populateErrorResponseStatus(ServicesErrorCode.RECIPIENT_NOT_EXIST);
+		}
+		response.setResponseStatus(responseStatus);
+
+		return response;
+	}
+
+	@Override
+	public List<DiscountCode> getDiscountCodes() {
+		Iterable<DiscountCode> recipients = discountCodeRepository.findAll();
+		List<DiscountCode> result = new ArrayList<DiscountCode>();
+		recipients.forEach(result::add);
+
+		return result;
+	}
+
+	@Override
+	public void deleteRecipient(Long recipientId) {
+		recipientRepository.deleteById(recipientId);
+	}
+
+}
