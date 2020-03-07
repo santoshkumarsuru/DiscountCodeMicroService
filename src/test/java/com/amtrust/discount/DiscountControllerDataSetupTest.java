@@ -11,6 +11,8 @@ import com.amtrust.discount.entity.Recipient;
 import com.amtrust.discount.entity.SpecialOffer;
 import com.amtrust.discount.request.ValidateSpecialOfferRequest;
 import com.amtrust.discount.response.DiscountCodeResponse;
+import com.amtrust.discount.response.RecipientResponse;
+import com.amtrust.discount.response.SpecialOfferResponse;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class DiscountControllerDataSetupTest {
@@ -33,9 +35,9 @@ public class DiscountControllerDataSetupTest {
 	private void assertRecipient(Recipient recipient, String email, String name) {
 		recipient.setEmail(email);
 		recipient.setName(name);
-		Recipient response = restTemplate.postForObject(localHostUrl + "/addRecipient", recipient, Recipient.class);
+		RecipientResponse response = restTemplate.postForObject(localHostUrl + "/addRecipient", recipient, RecipientResponse.class);
 		assertNotNull(response);
-		assertNotNull(response.getId());
+		assertNotNull(response.getRecipient());
 	}
 
 	@Test
@@ -54,10 +56,10 @@ public class DiscountControllerDataSetupTest {
 	private void assertSpecialOffer(SpecialOffer specialOffer, double discountPercent, String discountName) {
 		specialOffer.setDiscountPercent(discountPercent);
 		specialOffer.setOfferName(discountName);
-		SpecialOffer response = restTemplate.postForObject(localHostUrl + "/addSpecialOffer", specialOffer,
-				SpecialOffer.class);
+		SpecialOfferResponse response = restTemplate.postForObject(localHostUrl + "/addSpecialOffer", specialOffer,
+				SpecialOfferResponse.class);
 		assertNotNull(response);
-		assertNotNull(response.getId());
+		assertNotNull(response.getSpecialOffer());
 	}
 
 	@Test

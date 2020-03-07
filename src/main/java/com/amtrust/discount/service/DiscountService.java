@@ -5,6 +5,7 @@ import java.util.List;
 import com.amtrust.discount.entity.DiscountCode;
 import com.amtrust.discount.entity.Recipient;
 import com.amtrust.discount.entity.SpecialOffer;
+import com.amtrust.discount.exception.DiscountServiceException;
 import com.amtrust.discount.request.ValidateDiscountCodeRequest;
 import com.amtrust.discount.request.ValidateSpecialOfferRequest;
 import com.amtrust.discount.response.DiscountCodeResponse;
@@ -13,7 +14,13 @@ import com.amtrust.discount.response.RedeemCodeResponse;
 
 public interface DiscountService {
 
-	public SpecialOffer addSpecialOffer(SpecialOffer specialOffer);
+	public Recipient addRecipient(Recipient recipient) throws DiscountServiceException;
+
+	public SpecialOffer addSpecialOffer(SpecialOffer specialOffer) throws DiscountServiceException;
+
+	public void deleteSpecialOffer(Long offerId) throws DiscountServiceException;
+
+	public void deleteRecipient(Long recipientId) throws DiscountServiceException;
 
 	public List<SpecialOffer> getSpecialOffers();
 
@@ -21,16 +28,10 @@ public interface DiscountService {
 
 	public List<Recipient> getRecipients();
 
-	public Recipient addRecipient(Recipient recipient);
-
-	DiscountCodeResponse validateAndGetDiscountCode(ValidateSpecialOfferRequest validateDiscountRequest);
-
-	RedeemCodeResponse redeemDiscountCode(ValidateDiscountCodeRequest validateDiscountRequest);
-
-	public void deleteSpecialOffer(Long offerId);
-
-	public void deleteRecipient(Long recipientId);
-
 	public GetDiscountCodeResponse getAllDiscountCodesByEmail(String email);
+
+	public DiscountCodeResponse validateAndGetDiscountCode(ValidateSpecialOfferRequest validateDiscountRequest);
+
+	public RedeemCodeResponse redeemDiscountCode(ValidateDiscountCodeRequest validateDiscountRequest);
 
 }

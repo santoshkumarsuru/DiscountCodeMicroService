@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -14,6 +15,7 @@ import com.amtrust.discount.constant.ServicesErrorCode;
 import com.amtrust.discount.entity.DiscountCode;
 import com.amtrust.discount.entity.Recipient;
 import com.amtrust.discount.entity.SpecialOffer;
+import com.amtrust.discount.exception.DiscountServiceException;
 import com.amtrust.discount.repository.DiscountCodeRepository;
 import com.amtrust.discount.repository.RecipientRepository;
 import com.amtrust.discount.repository.SpecialOfferRepository;
@@ -43,13 +45,23 @@ public class DiscountServiceImpl implements DiscountService {
 	ValidatorUtils validatorUtils;
 
 	@Override
-	public SpecialOffer addSpecialOffer(SpecialOffer specialOffer) {
+	public SpecialOffer addSpecialOffer(SpecialOffer specialOffer) throws DiscountServiceException {
 		return specialOfferRepository.save(specialOffer);
 	}
 
 	@Override
-	public void deleteSpecialOffer(Long offerId) {
+	public Recipient addRecipient(Recipient recipient) throws DiscountServiceException {
+		return recipientRepository.save(recipient);
+	}
+
+	@Override
+	public void deleteSpecialOffer(Long offerId) throws DiscountServiceException {
 		specialOfferRepository.deleteById(offerId);
+	}
+
+	@Override
+	public void deleteRecipient(Long recipientId) throws DiscountServiceException, DataRetrievalFailureException {
+		recipientRepository.deleteById(recipientId);
 	}
 
 	@Override
@@ -69,8 +81,12 @@ public class DiscountServiceImpl implements DiscountService {
 	}
 
 	@Override
-	public Recipient addRecipient(Recipient recipient) {
-		return recipientRepository.save(recipient);
+	public List<DiscountCode> getDiscountCodes() {
+		Iterable<DiscountCode> recipients = discountCodeRepository.findAll();
+		List<DiscountCode> result = new ArrayList<DiscountCode>();
+		recipients.forEach(result::add);
+
+		return result;
 	}
 
 	@Override
@@ -92,7 +108,8 @@ public class DiscountServiceImpl implements DiscountService {
 
 		String uniqueDiscountCode = r.getEmail() + RandomStringUtils.randomAlphanumeric(6);
 		discountCode.setDiscountCode(uniqueDiscountCode);
-		LocalDate expiryDate = LocalDate.now().plusDays(30);// Set 30 days Expiry period
+		LocalDate expiryDate = LocalDate.now().plusDays(30);// Set 30 days
+															// Expiry period
 		discountCode.setExpiryDate(expiryDate);
 		discountCodeRepository.save(discountCode);
 		response.setDiscountCode(discountCode);
@@ -145,20 +162,6 @@ public class DiscountServiceImpl implements DiscountService {
 		response.setResponseStatus(responseStatus);
 
 		return response;
-	}
-
-	@Override
-	public List<DiscountCode> getDiscountCodes() {
-		Iterable<DiscountCode> recipients = discountCodeRepository.findAll();
-		List<DiscountCode> result = new ArrayList<DiscountCode>();
-		recipients.forEach(result::add);
-
-		return result;
-	}
-
-	@Override
-	public void deleteRecipient(Long recipientId) {
-		recipientRepository.deleteById(recipientId);
 	}
 
 }

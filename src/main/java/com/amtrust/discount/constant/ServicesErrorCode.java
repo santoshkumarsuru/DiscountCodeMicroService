@@ -11,6 +11,7 @@ public enum ServicesErrorCode {
 	DISCOUNT_CODE_EXPIRED(106, "Discount Code is Expired"),
 	RECIPIENT_NOT_MAPPED_TO_ANY_DISCOUNTS(107, "Recipient does not have any discounts mapped"),
 	INVALID_REQUEST(108, "Input Request Invalid"),
+	NO_DATA_AVAILABLE(109, "Data is unavailable for the request input")
 
 	;
 

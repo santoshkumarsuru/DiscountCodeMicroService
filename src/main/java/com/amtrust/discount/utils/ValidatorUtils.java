@@ -58,7 +58,7 @@ public class ValidatorUtils {
 			if (dc != null && dc.isUsed()) {
 				responseStatus.populateErrorResponseStatus(ServicesErrorCode.DISCOUNT_CODE_USED);
 			} else if (dc != null && !dc.isUsed()) {
-				if (dc.getExpiryDate().isAfter(LocalDate.now())) {
+				if (dc.getExpiryDate().isBefore(LocalDate.now())) {
 					responseStatus.populateErrorResponseStatus(ServicesErrorCode.DISCOUNT_CODE_EXPIRED);
 				}
 			} else if (dc == null) {

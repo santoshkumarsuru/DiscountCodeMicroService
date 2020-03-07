@@ -25,6 +25,7 @@ import com.amtrust.discount.request.ValidateSpecialOfferRequest;
 import com.amtrust.discount.response.DiscountCodeResponse;
 import com.amtrust.discount.response.DiscountInfo;
 import com.amtrust.discount.response.GetDiscountCodeResponse;
+import com.amtrust.discount.response.RecipientResponse;
 import com.amtrust.discount.response.RedeemCodeResponse;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -39,7 +40,7 @@ public class DiscountControllerTest {
 		Recipient r = new Recipient();
 		r.setEmail(null);
 		r.setName("kalyan");
-		Recipient response = restTemplate.postForObject(localHostUrl + "/addRecipient", r, Recipient.class);
+		RecipientResponse response = restTemplate.postForObject(localHostUrl + "/addRecipient", r, RecipientResponse.class);
 	}
 
 	@Test
