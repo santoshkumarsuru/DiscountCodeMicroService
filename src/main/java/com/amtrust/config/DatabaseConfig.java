@@ -1,4 +1,4 @@
-package com.config;
+package com.amtrust.config;
 import com.zaxxer.hikari.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;

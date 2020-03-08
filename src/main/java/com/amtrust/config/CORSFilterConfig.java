@@ -1,4 +1,4 @@
-package com.config;
+package com.amtrust.config;
 
 import java.io.IOException;
 import javax.servlet.Filter;
