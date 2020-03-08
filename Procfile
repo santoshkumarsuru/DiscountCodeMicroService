@@ -1,1 +1,1 @@
-web: java $JAVA_OPTS -jar target/DiscountCodeMicroService-1.0-SNAPSHOT.war -Dserver.port=$PORT $JAR_OPTS
+web java -Dserver.port=$PORT $JAVA_OPTS -jar target/DiscountCodeMicroService-1.0-SNAPSHOT.war
