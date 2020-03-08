@@ -338,7 +338,7 @@ if (content.locals) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(/*! /Users/kalyansomisetty/DiscountCodeMicroServiceUI/src/styles.css */"./src/styles.css");
+module.exports = __webpack_require__(/*! F:\Java\sts-workspace\student-kard\ezweb\src\styles.css */"./src/styles.css");
 
 
 /***/ })
