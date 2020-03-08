@@ -10,8 +10,6 @@ public class DiscountCodeMicroServiceApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DiscountCodeMicroServiceApplication.class, args);
-		openAppUrl("8080");
-		openAppUrl("8080/swagger-ui.html");
 	}
 	
 	public static void openAppUrl(String port) {
